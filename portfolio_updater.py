@@ -9,9 +9,9 @@ REPOS_URL = "https://api.github.com/users/Morgus/repos?sort=pushed"
 
 # HTML to generate for each project
 HTML_STRING = """
-        <h3>{0} - {1}{3}</h3>
+        <h3>{0} - {1}</h3>
         <p><a href="{2}">{2}</a><br />
-        {4}</p>"""
+        {3}</p>"""
 
 # Specifically get v3 API response
 req = Request(REPOS_URL, headers={"Accept": "application/vnd.github.v3+json"})
@@ -27,11 +27,10 @@ repos = json.loads(received_bytes.decode("utf-8"))
 
 with open("./github_projects.html", "w") as file:
     for repo in repos:
-        forked = " (fork)" if repo["fork"] else "";
-        file.write(HTML_STRING.format(
+        if not repo["fork"]:
+            file.write(HTML_STRING.format(
                             repo["name"], repo["pushed_at"][:4],
-                            repo["html_url"], forked,
-                            repo["description"])
+                            repo["html_url"], repo["description"])
                             )
 
 # Combine the page
